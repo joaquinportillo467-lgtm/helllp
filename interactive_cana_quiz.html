@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>les villes du canada ottawa y quebec</title>
+    <!-- Importamos fuentes modernas y biblioteca de iconos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-color: #1e293b;
+            --accent-color: #e11d48; /* Rojo hoja de arce canadiense */
+            --accent-hover: #f43f5e;
+            --success-color: #10b981;
+            --fail-color: #ef4444;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fondo decorativo abstracto para dar ambiente de juego */
+        .bg-decor {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(225, 29, 72, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .bg-decor-1 { top: -50px; left: -50px; }
+        .bg-decor-2 { bottom: -50px; right: -50px; }
+
+        .game-container {
+            background-color: var(--card-color);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+            text-align: center;
+            border: 2px solid #334155;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* PANTALLA DE INICIO */
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .maple-logo {
+            font-size: 5rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(225, 29, 72, 0.4));
+        }
+
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #f43f5e, #fda4af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .rules-card {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 16px;
+            width: 100%;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .rules-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rules-list {
+            list-style: none;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .rules-list li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .rules-list li i {
+            color: var(--accent-color);
+            margin-top: 4px;
+        }
+
+        /* PANTALLA DE JUEGO (Oculta al inicio) */
+        .quiz-screen {
+            display: none;
+        }
+
+        .header-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #334155;
+            border-radius: 10px;
+            height: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .question-box {
+            background-color: #0f172a;
+            padding: 35px 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid #475569;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 1.35rem;
+            line-height: 1.6;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .options-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* BOTONES */
+        .action-btn {
+            background: linear-gradient(135deg, var(--accent-color), #be123c);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, var(--accent-hover), var(--accent-color));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
+        }
+
+        .option-btn {
+            flex: 1;
+            background-color: #334155;
+            color: var(--text-color);
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #475569;
+            border-color: var(--text-secondary);
+            transform: translateY(-2px);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .incorrect {
+            background-color: var(--fail-color) !important;
+            border-color: var(--fail-color) !important;
+            color: white;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* PANTALLA DE RESULTADOS (Oculta al inicio) */
+        .result-screen {
+            display: none;
+        }
+
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .victory { 
+            color: var(--success-color); 
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
+        }
+        
+        .game-over { 
+            color: var(--fail-color); 
+            filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3));
+        }
+
+        .score-text {
+            font-size: 1.15rem;
+            margin-bottom: 30px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Decoración de fondo -->
+    <div class="bg-decor bg-decor-1"></div>
+    <div class="bg-decor bg-decor-2"></div>
+
+    <div class="game-container">
+        
+        <!-- PANTALLA DE INICIO (HOME SCREEN) -->
+        <div id="start-screen" class="start-screen">
+            <div class="maple-logo">
+                <i class="fa-solid fa-maple-leaf"></i>
+            </div>
+            <h1 class="main-title">Le Défi Canadien</h1>
+            <p class="subtitle">¡Desafío de Geografía!</p>
+            
+            <div class="rules-card">
+                <div class="rules-title">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Reglas del Juego:</span>
+                </div>
+                <ul class="rules-list">
+                    <li><i class="fa-solid fa-angle-right"></i> <span>Responderás <b>15 preguntas</b> sobre Canadá.</span></li>
+                    <li><i class="fa-solid fa-angle-right"></i> <span>Las preguntas están formuladas en <b>francés</b>.</span></li>
+                    <li><i class="fa-solid fa-angle-right"></i> <span>Debes decidir si son <b>Verdaderas (Vrai)</b> o <b>Falsas (Faux)</b>.</span></li>
+                    <li><i class="fa-solid fa-angle-right"></i> <span>¡Necesitas un <b>70%</b> (mínimo 11 aciertos) para ganar!</span></li>
+                </ul>
+            </div>
+            
+            <button class="action-btn" onclick="startGame()">¡Comenzar Desafío!</button>
+        </div>
+
+        <!-- PANTALLA DE JUEGO (GAMEPLAY SCREEN) -->
+        <div id="quiz-screen" class="quiz-screen">
+            <div class="header-section">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress"></div>
+                </div>
+                <div class="stats">
+                    <span id="question-number">Pregunta 1 de 15</span>
+                    <span id="live-score">Puntuación: 0</span>
+                </div>
+            </div>
+            
+            <div class="question-box">
+                <h2 id="question-text">Chargement de la question...</h2>
+            </div>
+            
+            <div class="options-container">
+                <button class="option-btn" id="btn-true" onclick="handleAnswer(true)">Vrai (Verdadero)</button>
+                <button class="option-btn" id="btn-false" onclick="handleAnswer(false)">Faux (Falso)</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE RESULTADOS (RESULTS SCREEN) -->
+        <div id="result-screen" class="result-screen">
+            <div id="result-visual" class="result-icon">🏆</div>
+            <div class="result-title" id="status-banner">¡VICTORIA!</div>
+            <p class="score-text" id="final-score-details">Lograste responder correctamente 0 de 15 preguntas.</p>
+            <button class="action-btn" onclick="resetToHome()">Volver al Inicio</button>
+        </div>
+    </div>
+
+    <script>
+        // Banco de preguntas en Francés con sus respuestas (true = Vrai, false = Faux)
+        const quizData = [
+            { q: "Ottawa est la capitale du Canada.", ans: true },
+            { q: "Québec est une ville où l'on parle principalement français.", ans: true },
+            { q: "Le Parlement du Canada est situé à Québec.", ans: false },
+            { q: "Ottawa se trouve dans la province de l'Ontario.", ans: true },
+            { q: "Le Château Frontenac se trouve à Ottawa.", ans: false },
+            { q: "Le Château Frontenac se trouve à Québec.", ans: true },
+            { q: "La feuille d'érable est un symbole national du Canada.", ans: true },
+            { q: "Québec et Ottawa sont des villes du Canada.", ans: true },
+            { q: "Toronto est la capitale du Canada.", ans: false },
+            { q: "Ottawa est située au bord de la rivière des Outaouais.", ans: true },
+            { q: "Québec est l'une des plus anciennes villes du Canada.", ans: true },
+            { q: "La langue officielle de la province de Québec est l'anglais.", ans: false },
+            { q: "Le français est la langue officielle de la province de Québec.", ans: true },
+            { q: "Ottawa est connue pour le Parlement du Canada.", ans: true },
+            { q: "Québec est située sur la côte de l'océan Pacifique.", ans: false }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let choiceSelected = false;
+
+        const startScreen = document.getElementById("start-screen");
+        const quizScreen = document.getElementById("quiz-screen");
+        const resultScreen = document.getElementById("result-screen");
+        
+        const questionText = document.getElementById("question-text");
+        const questionNumber = document.getElementById("question-number");
+        const liveScore = document.getElementById("live-score");
+        const progressBar = document.getElementById("progress");
+        
+        const statusBanner = document.getElementById("status-banner");
+        const resultVisual = document.getElementById("result-visual");
+        const finalScoreDetails = document.getElementById("final-score-details");
+        
+        const btnTrue = document.getElementById("btn-true");
+        const btnFalse = document.getElementById("btn-false");
+
+        // Función para cambiar de la pantalla de inicio al juego real
+        function startGame() {
+            startScreen.style.display = "none";
+            quizScreen.style.display = "block";
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            choiceSelected = false;
+            
+            // Restablecer botones
+            btnTrue.className = "option-btn";
+            btnFalse.className = "option-btn";
+            btnTrue.disabled = false;
+            btnFalse.disabled = false;
+            
+            let currentQuestion = quizData[currentQuestionIndex];
+            
+            // Textos en pantalla
+            questionNumber.innerText = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            liveScore.innerText = `Puntuación: ${score}`;
+            questionText.innerText = currentQuestion.q;
+            
+            // Barra de progreso interactiva
+            let progressPercent = (currentQuestionIndex / quizData.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+        }
+
+        function handleAnswer(selectedAnswer) {
+            if (choiceSelected) return; 
+            choiceSelected = true;
+
+            let correctAnswer = quizData[currentQuestionIndex].ans;
+            
+            btnTrue.disabled = true;
+            btnFalse.disabled = true;
+
+            let selectedButton = selectedAnswer ? btnTrue : btnFalse;
+            let correctButton = correctAnswer ? btnTrue : btnFalse;
+
+            // Evaluar respuesta
+            if (selectedAnswer === correctAnswer) {
+                selectedButton.classList.add("correct");
+                score++;
+                liveScore.innerText = `Puntuación: ${score}`;
+            } else {
+                selectedButton.classList.add("incorrect");
+                correctButton.classList.add("correct"); // Resaltar la respuesta correcta en verde
+            }
+
+            // Pausa breve para feedback visual antes de pasar a la siguiente pregunta
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizData.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1400);
+        }
+
+        function showResults() {
+            progressBar.style.width = "100%";
+            quizScreen.style.display = "none";
+            resultScreen.style.display = "block";
+
+            let finalPercentage = Math.round((score / quizData.length) * 100);
+            
+            // Validar condición de victoria: 70% o más (mínimo 11 de 15)
+            if (finalPercentage >= 70) {
+                resultVisual.innerText = "🏆";
+                statusBanner.innerText = "¡VICTORIA!";
+                statusBanner.className = "result-title victory";
+                finalScoreDetails.innerHTML = `¡Impresionante! Aprobaste con un <b>${finalPercentage}%</b>.<br>Contestaste correctamente <b>${score} de 15</b> preguntas.`;
+            } else {
+                resultVisual.innerText = "💀";
+                statusBanner.innerText = "FIN DEL JUEGO";
+                statusBanner.className = "result-title game-over";
+                finalScoreDetails.innerHTML = `No lograste alcanzar el 70% requerido.<br>Tu puntuación final fue de <b>${finalPercentage}%</b> (<b>${score} de 15</b> correctas).<br>¡Buen intento!`;
+            }
+        }
+
+        // Regresar a la pantalla de bienvenida y reiniciar variables
+        function resetToHome() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultScreen.style.display = "none";
+            startScreen.style.display = "flex";
+        }
+    </script>
+</body>
+</html>
